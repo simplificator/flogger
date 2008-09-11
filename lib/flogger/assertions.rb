@@ -1,5 +1,8 @@
 module Flogger
   module InstanceMethods
+    ERROR_MESSAGE_PREFIX = 'Error when flogging your files:'
+    ERROR_MESSAGE = "%s has a flog score of %.2f (exceeding treshold of %.2f by %.2f)"
+    
     # 
     # assert the flog score of file(s) is below a treshold (default treshold is 20).
     # 
@@ -27,7 +30,7 @@ module Flogger
       options = {:treshold => 20}.merge(options)
       flogger = Flog.new()
       flogger.flog_files(files)
-      failures = reject_success(flogger.totals, options)
+      failures = reject_success_and_sort(flogger.totals, options)
       assert_block(build_flog_message(failures, options)) do
         failures.size == 0
       end
@@ -50,10 +53,10 @@ module Flogger
     # Builds a 'nice' error message listing all failed methods
     #
     def build_flog_message(failures, options)
-      message = ['Error when flogging your files:']
-      failures.each do |key, value|
-        limit = treshold_for_key(key, options)
-        message << "#{key.ljust(40, ' ')} has a flog score of #{value} (exceeding treshold of #{limit} by #{value - limit})"
+      message = [ERROR_MESSAGE_PREFIX]
+      failures.each do |item|
+        limit = treshold_for_key(item.first, options)
+        message <<  ERROR_MESSAGE % [item.first.ljust(40, ' '), item.last, limit, (item.last - limit)]
       end
       message.join("\n")
     end
@@ -61,10 +64,10 @@ module Flogger
     #
     # Remove all values which are not exceeding the threshold
     #
-    def reject_success(totals, options)
+    def reject_success_and_sort(totals, options)
       totals.reject do |key, value| 
         value < treshold_for_key(key, options)
-      end
+      end.to_a.sort() {|a, b| b.last <=> a.last}
     end
     
     

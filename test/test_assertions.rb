@@ -28,6 +28,10 @@ class TestAssertions < Test::Unit::TestCase
     assert_flog(__FILE__, :treshold => 10, :tresholds => {'TestAssertions#test_extract_files_and_options' => 23})
   end
   
+  def test_flunk
+    assert_flog(__FILE__, :treshold => 1)
+  end
+  
   # flog score of > 22
   def test_extract_files_and_options
     files, options = public_extract_files_and_options('some')

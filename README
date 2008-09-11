@@ -1,0 +1,35 @@
+= flogger
+== What is it
+It's a test/unit extension so you can unit test your flog scores
+
+
+== Installation
+sudo gem install flog
+sudo gem install simplificator-flogger
+
+== usage
+In your unit tests do
+
+def test_something
+  assert_flog(a_file_or_a_dir)
+end
+
+= Samples:
+== Flog a file or all ruby files in a directory
+assert_flog(file_or_dir)
+== Flog several files or directories
+assert_flog(file_or_dir_1, file_or_dir_2, file_or_fir_n)
+== set your own flog threshold
+assert_flog(file_or_dir, :threshold => 20)
+== set your own flog threshold for a specific method
+assert_flog(file_or_dir, :thresholds => {'FooClass#bar_method'})
+     
+= Credits
+Thanks to the ruby sadists at http://ruby.sadi.st/Ruby_Sadist.html 
+
+= More
+See lib/flogger/assertions.rb for more
+
+= About us
+Simplificator writes Ruby and Ruby on Rails apps for a living.
+http://simplificator.com
