@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = %q{flogger}
-  s.version = "0.0.2"
+  s.version = "0.1.0"
   s.date = %q{2008-09-11}
   s.authors = ["Simplificator GmbH"]
   s.email = %q{info@simplificator.com}

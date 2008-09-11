@@ -1,7 +1,7 @@
 module Flogger
   module InstanceMethods
     # 
-    # assert the flog score of file(s) is below a treshold.
+    # assert the flog score of file(s) is below a treshold (default treshold is 20).
     # 
     # = Samples:
     # == Flog a file or all ruby files in a directory
@@ -14,7 +14,7 @@ module Flogger
     # assert_flog(file_or_dir, :thresholds => {'FooClass#bar_method'})
     # 
     # == options
-    #  * :treshold what flog score do we allow at most. __default__ is 20.
+    #  * :treshold what flog score do we allow at most. Default is 20.
     #  * :tresholds customize tresholds on a per class/method base, overrides :treshold option
     # 
     # == Message
@@ -32,12 +32,6 @@ module Flogger
         failures.size == 0
       end
     end
-    
-    
-    def assert_floq_rails(*args)
-      assert_flog([RAILS_ROOT] + args)
-    end
-    
     
     private
     
@@ -65,7 +59,7 @@ module Flogger
     end
     
     #
-    # Remove all values which are not exceeding the limit
+    # Remove all values which are not exceeding the threshold
     #
     def reject_success(totals, options)
       totals.reject do |key, value| 
