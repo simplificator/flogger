@@ -53,10 +53,11 @@ module Flogger
     # Builds a 'nice' error message listing all failed methods
     #
     def build_flog_message(failures, options)
+      max = failures.inject(0) {|memo, item| memo = [memo, item.first.length].max}
       message = [ERROR_MESSAGE_PREFIX]
       failures.each do |item|
         limit = treshold_for_key(item.first, options)
-        message <<  ERROR_MESSAGE % [item.first.ljust(40, ' '), item.last, limit, (item.last - limit)]
+        message <<  ERROR_MESSAGE % [item.first.ljust(max + 2, ' '), item.last, limit, (item.last - limit)]
       end
       message.join("\n")
     end
