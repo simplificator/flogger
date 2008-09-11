@@ -1,6 +1,6 @@
 module Flogger
   module InstanceMethods
-    ERROR_MESSAGE_PREFIX = 'Error when flogging your files:'
+    ERROR_MESSAGE_PREFIX = 'Error when flogging your files. %i methods exceeded threshold:'
     ERROR_MESSAGE = "%s has a flog score of %.2f (exceeding treshold of %.2f by %.2f)"
     
     # 
@@ -54,7 +54,7 @@ module Flogger
     #
     def build_flog_message(failures, options)
       max = failures.inject(0) {|memo, item| memo = [memo, item.first.length].max}
-      message = [ERROR_MESSAGE_PREFIX]
+      message = [ERROR_MESSAGE_PREFIX % failures.size]
       failures.each do |item|
         limit = treshold_for_key(item.first, options)
         message <<  ERROR_MESSAGE % [item.first.ljust(max + 2, ' '), item.last, limit, (item.last - limit)]
