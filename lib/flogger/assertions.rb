@@ -1,11 +1,30 @@
 module Flogger
   module InstanceMethods
-    #
-    # assert_flog([files_or_dir], options)
+    # 
+    # assert the flog score of file(s) is below a treshold.
+    # 
+    # = Samples:
+    # == Flog a file or all ruby files in a directory
+    # assert_flog(file_or_dir)
+    # == Flog several files or directories
+    # assert_flog(file_or_dir_1, file_or_dir_2, file_or_fir_n)
+    # == set your own flog threshold
+    # assert_flog(file_or_dir, :threshold => 20)
+    # == set your own flog threshold for a specific method
+    # assert_flog(file_or_dir, :thresholds => {'FooClass#bar_method'})
+    # 
+    # == options
+    #  * :treshold what flog score do we allow at most. __default__ is 20.
+    #  * :tresholds customize tresholds on a per class/method base, overrides :treshold option
+    # 
+    # == Message
+    # This assertion does not support passing in your own message like 
+    # other assertions do (optional last parameter) because the error message 
+    # lists all failures from flog.
     #
     def assert_flog(*args)
       files, options = extract_files_and_options(args)
-      options = {:limit => 20}.merge(options)
+      options = {:treshold => 20}.merge(options)
       flogger = Flog.new()
       flogger.flog_files(files)
       failures = reject_success(flogger.totals, options)
@@ -14,6 +33,10 @@ module Flogger
       end
     end
     
+    
+    def assert_floq_rails(*args)
+      assert_flog([RAILS_ROOT] + args)
+    end
     
     
     private
@@ -35,7 +58,8 @@ module Flogger
     def build_flog_message(failures, options)
       message = ['Error when flogging your files:']
       failures.each do |key, value|
-        message << "#{key.ljust(40, ' ')} has a flog score of #{value} (exceeding limit of #{options[:limit]} by #{value - options[:limit]})"
+        limit = treshold_for_key(key, options)
+        message << "#{key.ljust(40, ' ')} has a flog score of #{value} (exceeding treshold of #{limit} by #{value - limit})"
       end
       message.join("\n")
     end
@@ -45,9 +69,16 @@ module Flogger
     #
     def reject_success(totals, options)
       totals.reject do |key, value| 
-        value < options[:limit]
+        value < treshold_for_key(key, options)
       end
     end
+    
+    
+    def treshold_for_key(key, options)
+      options.has_key?(:tresholds) && options[:tresholds].has_key?(key) ? 
+        options[:tresholds][key] : options[:treshold]
+    end
+
   end
 end
 
